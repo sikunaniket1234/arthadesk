@@ -120,7 +120,16 @@ class SalesTransactionService {
             $invoiceNumber = sprintf('%s-%s-%04d', $prefix, $year, $nextSeq);
 
             $walkinName = !empty($cartData['walkin_name']) ? trim((string)$cartData['walkin_name']) : null;
-            $walkinPhone = !empty($cartData['walkin_phone']) ? trim((string)$cartData['walkin_phone']) : null;
+            $walkinName = $walkinName !== '' ? mb_substr($walkinName, 0, 100) : null;
+
+            $walkinPhone = null;
+            if (!empty($cartData['walkin_phone'])) {
+                // Accept only 10 numeric digits; tolerate spaces/dashes the counter may type.
+                $walkinPhone = (string)preg_replace('/[\s\-().]/', '', (string)$cartData['walkin_phone']);
+                if (!preg_match('/^[0-9]{10}$/', $walkinPhone)) {
+                    throw new Exception('Walk-in phone must be exactly 10 digits.');
+                }
+            }
 
             $invStmt = $pdo->prepare("
                 INSERT INTO invoices (

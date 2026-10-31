@@ -88,7 +88,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
                 <div>
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone" class="form-input" placeholder="e.g. 9437000000">
+                    <input type="tel" name="phone" class="form-input" placeholder="e.g. 9437000000" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="tel" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                 </div>
                 <div>
                     <label class="form-label">State</label>
@@ -136,7 +136,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
                 <div>
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone" id="es_phone" class="form-input">
+                    <input type="tel" name="phone" id="es_phone" class="form-input" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="tel" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                 </div>
                 <div>
                     <label class="form-label">State</label>

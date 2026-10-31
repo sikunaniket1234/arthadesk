@@ -95,9 +95,35 @@
             padding-top: 6px;
             border-top: 1px dashed #000;
         }
+        /* No page margins => the browser prints NO header/footer (removes the
+           stray date + URL above the store name) and gives the receipt the
+           full paper height (stops the footer being trimmed off). */
+        @page {
+            size: auto;
+            margin: 0;
+        }
         @media print {
             .no-print { display: none !important; }
-            body { padding: 0; }
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 78mm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .receipt-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+            }
+            /* Never split a line item or the totals block across paper pages. */
+            .items-table tr,
+            .totals-section,
+            .footer,
+            .grand-total {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
@@ -142,6 +168,17 @@
                 <td><strong>Customer:</strong> <?= e($invoice['customer_name'] ?? 'Cash Customer') ?></td>
                 <td style="text-align: right;"><strong>Pay:</strong> <?= strtoupper($invoice['payment_method'] ?? 'CASH') ?></td>
             </tr>
+            <?php
+            // Walk-in phone if given, otherwise the registered customer's phone.
+            $receiptPhone = trim((string)($invoice['walkin_phone'] ?? ''));
+            if ($receiptPhone === '') {
+                $receiptPhone = trim((string)($invoice['customer_phone'] ?? ''));
+            }
+            if ($receiptPhone !== ''): ?>
+                <tr>
+                    <td colspan="2"><strong>Ph:</strong> <?= e($receiptPhone) ?></td>
+                </tr>
+            <?php endif; ?>
         </table>
 
         <!-- Items -->
@@ -231,11 +268,16 @@
     </div>
 
     <script>
-        // Auto-print on load if opened in popup
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                window.print();
-            }, 400);
+        // Auto-print once fonts are ready so the layout cannot shift mid-print.
+        function autoPrint() {
+            setTimeout(function () { window.print(); }, 250);
+        }
+        window.addEventListener('load', function () {
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(autoPrint).catch(autoPrint);
+            } else {
+                autoPrint();
+            }
         });
     </script>
 </body>

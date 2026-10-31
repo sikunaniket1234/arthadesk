@@ -98,14 +98,20 @@ class InvoiceController {
 
         $data['tenant'] = $tenant;
         $data['taxProfile'] = $request->taxProfile();
+        $invoiceNumber = $data['invoice']['invoice_number'];
+        $download = $request->query('download') === '1';
+
         $body = View::renderToString('invoices/show', $data);
-        $html = PdfService::document('Invoice ' . $data['invoice']['invoice_number'], $body);
+        $html = PdfService::document('Invoice ' . $invoiceNumber, $body);
 
         AuditService::log('invoice.pdf_exported', 'invoice', $invoiceId, [
-            'invoice_number' => $data['invoice']['invoice_number'],
+            'invoice_number' => $invoiceNumber,
+            'download' => $download,
         ], (int)$tenant['id']);
 
-        PdfService::stream($html, 'Invoice-' . $data['invoice']['invoice_number'] . '.pdf');
+        // ?download=1 forces a file save (used by the POS after every sale);
+        // without it the PDF opens inline for previewing from the invoice page.
+        PdfService::stream($html, 'Invoice-' . $invoiceNumber . '.pdf', $download);
     }
 
     public function export(Request $request): void {

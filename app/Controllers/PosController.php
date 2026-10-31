@@ -172,9 +172,14 @@ class PosController {
             Response::json(['success' => false, 'error' => 'Customer name is required (max 100 characters).'], 422);
             return;
         }
-        if ($phone !== null && !preg_match('/^[0-9+\-\s]{6,20}$/', $phone)) {
-            Response::json(['success' => false, 'error' => 'Invalid phone number.'], 422);
-            return;
+        if ($phone !== null && $phone !== '') {
+            $phone = (string)preg_replace('/[\s\-().]/', '', $phone);
+            if (!preg_match('/^[0-9]{10}$/', $phone)) {
+                Response::json(['success' => false, 'error' => 'Phone must be exactly 10 digits.'], 422);
+                return;
+            }
+        } else {
+            $phone = null;
         }
         if ($email !== null && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Response::json(['success' => false, 'error' => 'Invalid email address.'], 422);

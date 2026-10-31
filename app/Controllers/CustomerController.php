@@ -114,8 +114,14 @@ class CustomerController {
         if ($name === '' || mb_strlen($name) > 100) {
             return 'Customer name is required (max 100 characters).';
         }
-        if ($phone !== null && !preg_match('/^[0-9+\-\s]{6,20}$/', $phone)) {
-            return 'Invalid phone number.';
+        if ($phone !== null && $phone !== '') {
+            // Only 10 numeric digits are accepted; tolerate spaces/dashes on entry.
+            $phone = (string)preg_replace('/[\s\-().]/', '', $phone);
+            if (!preg_match('/^[0-9]{10}$/', $phone)) {
+                return 'Phone must be exactly 10 digits.';
+            }
+        } else {
+            $phone = null;
         }
         if ($email !== null && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return 'Invalid email address.';

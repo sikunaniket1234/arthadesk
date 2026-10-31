@@ -99,8 +99,8 @@ $defaultPay = in_array(($defaultPaymentMode ?? 'cash'), ['cash', 'upi', 'card', 
 
             <!-- Optional Walk-in Customer Name & Phone -->
             <div id="walkinFields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.4rem; background: #f8fafc; border-radius: 6px; border: 1px dashed #cbd5e1;">
-                <input type="text" id="walkinName" class="form-input" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" placeholder="Walk-in Name (Optional)">
-                <input type="tel" id="walkinPhone" class="form-input" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" placeholder="Phone (Optional)">
+                <input type="text" id="walkinName" class="form-input" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" placeholder="Walk-in Name (Optional)" maxlength="100" autocomplete="off">
+                <input type="tel" id="walkinPhone" class="form-input" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" placeholder="Phone — 10 digits (Optional)" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
             </div>
         </div>
 
@@ -184,7 +184,7 @@ $defaultPay = in_array(($defaultPaymentMode ?? 'cash'), ['cash', 'upi', 'card', 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
                 <div>
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" id="qcPhone" class="form-input" placeholder="e.g. 9861000000">
+                    <input type="tel" id="qcPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="tel" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                 </div>
                 <div>
                     <label class="form-label">State</label>
@@ -472,6 +472,21 @@ function saveQuickCustomer(e) {
     .catch(err => alert('Network error saving customer.'));
 }
 
+function downloadInvoicePdf(invoiceId, invoiceNumber) {
+    // Saves the invoice PDF to the user's downloads on every completed sale.
+    try {
+        const a = document.createElement('a');
+        a.href = '/app/invoices/' + invoiceId + '/pdf?download=1';
+        a.download = invoiceNumber + '.pdf';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } catch (e) {
+        // Download is best-effort; the invoice remains available under Invoices → PDF.
+    }
+}
+
 function executeCheckout() {
     if (cart.length === 0) return;
 
@@ -480,11 +495,24 @@ function executeCheckout() {
     btn.innerText = 'Processing Sale...';
 
     const customerId = document.getElementById('cartCustomer').value;
+    const walkinName = !customerId ? document.getElementById('walkinName').value.trim() : null;
+    const walkinPhoneRaw = !customerId ? document.getElementById('walkinPhone').value : null;
+    const walkinPhone = walkinPhoneRaw ? walkinPhoneRaw.replace(/[^0-9]/g, '').slice(0, 10) : null;
+
+    // Phone is optional, but when given it must be exactly 10 digits (server enforces the same rule).
+    if (walkinPhone && !/^[0-9]{10}$/.test(walkinPhone)) {
+        alert('Phone must be exactly 10 digits.');
+        document.getElementById('walkinPhone').focus();
+        btn.disabled = false;
+        btn.innerText = '💳 Complete Sale & Print';
+        return;
+    }
+
     const payload = {
         items: cart,
         customer_id: customerId || null,
-        walkin_name: !customerId ? document.getElementById('walkinName').value : null,
-        walkin_phone: !customerId ? document.getElementById('walkinPhone').value : null,
+        walkin_name: walkinName || null,
+        walkin_phone: walkinPhone || null,
         place_of_supply: document.getElementById('cartPlaceOfSupply').value,
         payment_method: selectedPaymentMethod
     };
@@ -510,6 +538,9 @@ function executeCheckout() {
     .then(res => {
         if (res.success) {
             pendingIdempotencyKey = null;
+            // 1) save the PDF receipt to the user's downloads
+            downloadInvoicePdf(res.invoice_id, res.invoice_number);
+            // 2) open the thermal receipt for printing
             if (printWindow && !printWindow.closed) {
                 printWindow.location.href = '/app/invoices/' + res.invoice_id + '/thermal';
             } else {
@@ -517,7 +548,8 @@ function executeCheckout() {
             }
             clearCart();
             alert('Sale Completed! Invoice #' + res.invoice_number + ' generated.' + (res.replayed ? ' (Recovered previous result)' : ''));
-            window.location.reload();
+            // Reload after the download has been handed off to the browser.
+            setTimeout(function () { window.location.reload(); }, 800);
         } else {
             if (printWindow && !printWindow.closed) {
                 printWindow.close();

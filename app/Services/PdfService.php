@@ -4,7 +4,7 @@ namespace App\Services;
 use App\Core\Logger;
 
 class PdfService {
-    public static function stream(string $html, string $filename): void {
+    public static function stream(string $html, string $filename, bool $attachment = false): void {
         $filename = self::safeFilename($filename);
 
         if (class_exists('Dompdf\\Dompdf')) {
@@ -17,7 +17,7 @@ class PdfService {
                 $dompdf->loadHtml($html, 'UTF-8');
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
-                $dompdf->stream($filename, ['Attachment' => false]);
+                $dompdf->stream($filename, ['Attachment' => $attachment]);
                 return;
             } catch (\Throwable $e) {
                 Logger::error('pdf_render_failed', ['error' => $e->getMessage()], 'app');
