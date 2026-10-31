@@ -1,0 +1,36 @@
+# Environment (never commit active secrets)
+.env
+.env.local
+.env.*.local
+.env.staging
+
+# Keep templates
+!.env.example
+!.env.dev
+!.env.prod
+
+# Runtime artifacts
+storage/logs/*
+storage/cache/*
+storage/backups/*
+storage/uploads/*
+storage/receipts/*
+!storage/**/.gitkeep
+
+# Dependencies
+/vendor/
+
+# Sensitive / operational files
+*.log
+*.sql
+*.sql.gz
+*.key
+*.pem
+auth.json
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
