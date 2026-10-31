@@ -154,12 +154,24 @@ if (!headers_sent()) {
     header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()');
     header('X-Request-ID: ' . Logger::requestId());
 
-    // Only public marketing pages are indexable; app, auth and admin stay out of search results.
+    // Public marketing pages are indexable; app, auth, admin and health
+    // endpoints stay out of search results. Prefix-based so it holds no
+    // matter how the request URI is normalised by the web server.
     $requestPath = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    $indexablePaths = ['/', '/sitemap.xml', '/robots.txt'];
-    header(in_array($requestPath, $indexablePaths, true)
-        ? 'X-Robots-Tag: index, follow, max-image-preview:large'
-        : 'X-Robots-Tag: noindex, nofollow');
+    if ($requestPath === '' || $requestPath[0] !== '/') {
+        $requestPath = '/' . ltrim($requestPath, '/');
+    }
+    $noIndexPrefixes = ['/app', '/admin', '/auth', '/healthz'];
+    $noIndex = false;
+    foreach ($noIndexPrefixes as $prefix) {
+        if ($requestPath === $prefix || str_starts_with($requestPath, $prefix . '/')) {
+            $noIndex = true;
+            break;
+        }
+    }
+    header($noIndex
+        ? 'X-Robots-Tag: noindex, nofollow'
+        : 'X-Robots-Tag: index, follow, max-image-preview:large');
 
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');

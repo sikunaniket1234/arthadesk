@@ -12,8 +12,10 @@ DirectoryIndex index.php
     RewriteCond %{HTTP_HOST} ^arthadesk\.in$ [NC]
     RewriteRule ^ https://www.arthadesk.in%{REQUEST_URI} [L,R=301]
 
+    # Block dotfiles only. Do NOT deny app/config/database/storage here:
+    # those folders live outside the web root, and a rule like
+    # ^(app|config|...) would also block this app's own /app/* routes.
     RewriteRule (^|/)\. - [F,L]
-    RewriteRule ^(app|config|database|storage|tests|bin|vendor)(/|$) - [F,L]
 
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -35,7 +37,9 @@ DirectoryIndex index.php
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
-    Header always set X-Robots-Tag "noindex, nofollow"
+    # NOTE: X-Robots-Tag is deliberately NOT set here. This file is served
+    # for both marketing pages (which must be indexed) and app/auth/admin
+    # pages (which must not be). public/index.php emits the correct value.
     Header unset X-Powered-By
     Header unset Server
 </IfModule>
