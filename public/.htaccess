@@ -12,6 +12,12 @@ DirectoryIndex index.php
     RewriteCond %{HTTP_HOST} ^arthadesk\.in$ [NC]
     RewriteRule ^ https://www.arthadesk.in%{REQUEST_URI} [L,R=301]
 
+    # The admin host is not a marketing surface: send its root straight to
+    # the platform admin sign-in instead of duplicating the landing page.
+    RewriteCond %{HTTP_HOST} ^app\.arthadesk\.in$ [NC]
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^ https://app.arthadesk.in/auth/login [L,R=302]
+
     # Block dotfiles only. Do NOT deny app/config/database/storage here:
     # those folders live outside the web root, and a rule like
     # ^(app|config|...) would also block this app's own /app/* routes.
