@@ -430,13 +430,12 @@ Documented so there are no surprises:
 
 ## Documentation
 
-Internal documents maintained alongside the project (not published to this repository):
-
 | Document | Contents |
 |---|---|
-| `docs/DATABASE_SCHEMA.md` | Column-level reference for all 26 tables, relationships, invariants |
-| `docs/ONBOARDING_GUIDE.md` | Step-by-step guide for bringing a new shop live |
-| `docs/SHOP_SETUP_GUIDE.md` | Shareable guide for shop owners: business setup and daily usage |
+| [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) | Column-level reference for all 26 tables, relationships, invariants |
+| [`docs/ONBOARDING_GUIDE.md`](docs/ONBOARDING_GUIDE.md) | Step-by-step guide for bringing a new shop live |
+| [`docs/SHOP_SETUP_GUIDE.md`](docs/SHOP_SETUP_GUIDE.md) | Shareable guide for shop owners: business setup and daily usage |
+| [`AUDIT_AND_DEPLOYMENT_PLAN.md`](AUDIT_AND_DEPLOYMENT_PLAN.md) | Security audit findings, Hostinger deployment plan, go-live checklist |
 
 ---
 
