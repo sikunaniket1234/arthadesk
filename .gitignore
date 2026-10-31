@@ -30,12 +30,15 @@ docker-compose.yml
 /vendor/
 
 # Sensitive / operational files
-*.log
-*.sql
+# NOTE: database/migrations and database/seeds are SOURCE CODE and stay tracked.
+# Only database dumps are ignored — those are written to storage/backups anyway.
 *.sql.gz
+*.dump
+*.log
 *.key
 *.pem
 auth.json
+!database/**/*.sql
 
 # IDE / OS
 .idea/

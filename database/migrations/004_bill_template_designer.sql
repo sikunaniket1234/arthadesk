@@ -1,0 +1,4 @@
+-- Migration 004: Bill/Receipt Template Designer
+SET FOREIGN_KEY_CHECKS = 0;
+CREATE TABLE IF NOT EXISTS bill_templates (id INT AUTO_INCREMENT PRIMARY KEY, tenant_id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT 'Default Template', type ENUM('thermal','normal','a4') NOT NULL DEFAULT 'thermal', is_default TINYINT(1) DEFAULT 1, config JSON NULL, css TEXT NULL, html_template TEXT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE, INDEX idx_bt_tenant (tenant_id,type)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SET FOREIGN_KEY_CHECKS = 1;
