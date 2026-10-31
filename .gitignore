@@ -17,10 +17,17 @@ storage/uploads/*
 storage/receipts/*
 !storage/**/.gitkeep
 
-# Documentation — only README.md is published
+# Documentation — only README.md (repo root) is published.
+# The leading slash matters: without it the negation would re-include any
+# nested README.md and pull local folders into git.
 *.md
-!README.md
+!/README.md
 docs/
+
+# Local working artifacts (never commit)
+artha_desk_landing_page_updated/
+artha_desk_landing_page_updated.zip
+*.zip
 
 # Docker (local development only)
 docker/
