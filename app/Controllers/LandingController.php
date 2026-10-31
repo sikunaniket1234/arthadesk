@@ -16,7 +16,10 @@ class LandingController {
     public function index(Request $request): void {
         // Resolved tenant = we are on a shop subdomain. Keep the original behaviour
         // there (login / POS) and reserve the marketing page for the apex domain.
-        if ($request->tenant() !== null) {
+        // The root route only runs TenantResolverMiddleware, which populates
+        // resolvedTenant(); tenant() is set later by TenantContextMiddleware on /app.
+        $shopTenant = $request->resolvedTenant() ?? $request->tenant();
+        if ($shopTenant !== null) {
             Response::redirect(auth_user() ? '/app/pos' : '/auth/login');
             return;
         }
