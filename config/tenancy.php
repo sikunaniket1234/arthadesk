@@ -1,7 +1,7 @@
 <?php
 return [
     'base_domain' => env('TENANCY_BASE_DOMAIN', 'arthadesk.in'),
-    'admin_host' => env('TENANCY_ADMIN_HOST', 'admin.arthadesk.in'),
+    'admin_host' => env('TENANCY_ADMIN_HOST', 'app.arthadesk.in'),
     'enforce_hosts' => env('TENANCY_ENFORCE_HOSTS', true),
     'reserved_slugs' => array_values(array_filter(array_map('trim', explode(',', (string)env(
         'TENANCY_RESERVED_SLUGS',

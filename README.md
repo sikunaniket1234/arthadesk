@@ -99,6 +99,14 @@ The core loop:
 - Structured JSON logging with per-request correlation IDs
 - Append-only audit trail for sensitive actions
 
+### Marketing site & lead capture
+- Public, indexable landing page on `arthadesk.in` with a complete SEO head (canonical, Open Graph, Twitter card, `robots`/`sitemap.xml`, JSON-LD for Organization, SoftwareApplication and FAQ)
+- Contact form at `/leads` with CSRF protection, honeypot, per-IP rate limiting and server-side validation
+- Enquiries stored in the `leads` table and emailed to `CONTACT_EMAIL` via `mail`, authenticated `smtp`, or a `log` driver for development
+- Admin leads dashboard (`/admin/leads`) with status pipeline: new → contacted → onboarded → closed
+- Store-address sign-in helper so customers are routed to their own subdomain
+- Single CSS bundle, no third-party font or image requests, mobile-first layout
+
 ### Internationalisation
 - English and Odia (ଓଡ଼ିଆ) UI
 - Per-tenant default locale and in-session locale switch
@@ -206,8 +214,12 @@ All configuration comes from environment variables, loaded from `.env` at the pr
 | `LOGIN_MAX_ATTEMPTS` / `LOGIN_WINDOW_MINUTES` | `5` / `15` | Login throttling |
 | `API_RATE_LIMIT` / `API_CHECKOUT_RATE_LIMIT` | `120` / `30` | Per-minute API limits |
 | `TENANCY_BASE_DOMAIN` | `arthadesk.in` | Shop subdomains resolve under this |
-| `TENANCY_ADMIN_HOST` | `admin.arthadesk.in` | Platform admin host |
+| `TENANCY_ADMIN_HOST` | `app.arthadesk.in` | Platform admin host |
 | `TENANCY_ENFORCE_HOSTS` | `true` | Return 404 for unknown hosts |
+| `CONTACT_EMAIL` | — | Mailbox that receives landing-page enquiries |
+| `CONTACT_PHONE` / `CONTACT_WHATSAPP` | — | Optional contact details shown on the landing page |
+| `MAIL_DRIVER` | `log` | `mail` (PHP mail()), `smtp` (authenticated), or `log` (never sends) |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | — | Outbound mailbox when `MAIL_DRIVER=smtp` |
 | `API_ROUTE_PREFIX` | *(empty)* | Optional opaque prefix for JSON endpoints |
 
 Templates live in `.env.example` (placeholders), `.env.dev` (Docker) and `.env.prod` (production). Switch between them with:
@@ -268,10 +280,12 @@ Everything except `public/` sits **outside the web root** in production.
 
 | Host | Behaviour |
 |---|---|
-| `arthadesk.in`, `www.arthadesk.in` | Platform/marketing host |
-| `admin.arthadesk.in` | Platform super-admin portal |
-| `{slug}.arthadesk.in` | Resolved to `tenants.slug`; tenant login is scoped to that tenant |
+| `arthadesk.in`, `www.arthadesk.in` | **Marketing landing page** (indexable), lead capture form |
+| `app.arthadesk.in` | Platform super-admin portal (onboarding, tenants, leads) |
+| `{slug}.arthadesk.in` | Resolved to `tenants.slug`; root shows that shop's login/POS |
 | Anything else | 404 when `TENANCY_ENFORCE_HOSTS=true` |
+
+The apex domain serves the public website — root renders the landing page, `POST /leads` captures enquiries into the `leads` table and emails `CONTACT_EMAIL`. On a shop subdomain the same root path keeps its original behaviour (login → POS), so no shop is affected.
 
 Key guarantees:
 
@@ -330,7 +344,7 @@ Request correlation: every response carries an `X-Request-ID`. Users can quote i
 
 ## Database
 
-Six migrations define **26 tables** across platform/identity, catalogue, sales, inventory, purchasing, accounting and audit domains.
+Seven migrations define **27 tables** across platform/identity, catalogue, sales, inventory, purchasing, marketing, accounting and audit domains.
 
 ```bash
 php bin/migrate.php
@@ -386,7 +400,7 @@ The bootstrap resolves paths as siblings of `public/`, so this layout works unch
 |---|---|
 | `A @` | server IP |
 | `CNAME www` | `@` |
-| `A admin` | server IP |
+| `A app` | server IP |
 | `A *` | server IP (wildcard, for shops) |
 
 Wildcard SSL is the usual constraint on shared hosting. Cloudflare Universal SSL covers `*.arthadesk.in` — run it in front of the origin with **Full (strict)**. Until wildcard DNS/SSL exists, deploy and test on the base domain (`www.arthadesk.in`) only; unknown subdomains intentionally return 404.
@@ -438,7 +452,7 @@ Beyond this README, the following documents are maintained alongside the project
 
 | Document | Contents |
 |---|---|
-| `docs/DATABASE_SCHEMA.md` | Column-level reference for all 26 tables, relationships, invariants |
+| `docs/DATABASE_SCHEMA.md` | Column-level reference for all 27 tables, relationships, invariants |
 | `docs/ONBOARDING_GUIDE.md` | Step-by-step guide for bringing a new shop live |
 | `docs/SHOP_SETUP_GUIDE.md` | Shareable guide for shop owners: business setup and daily usage |
 | `AUDIT_AND_DEPLOYMENT_PLAN.md` | Security audit findings, Hostinger deployment plan, go-live checklist |

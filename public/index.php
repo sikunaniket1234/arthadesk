@@ -153,7 +153,13 @@ if (!headers_sent()) {
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()');
     header('X-Request-ID: ' . Logger::requestId());
-    header('X-Robots-Tag: noindex, nofollow');
+
+    // Only public marketing pages are indexable; app, auth and admin stay out of search results.
+    $requestPath = (string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    $indexablePaths = ['/', '/sitemap.xml', '/robots.txt'];
+    header(in_array($requestPath, $indexablePaths, true)
+        ? 'X-Robots-Tag: index, follow, max-image-preview:large'
+        : 'X-Robots-Tag: noindex, nofollow');
 
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
@@ -187,9 +193,12 @@ $apiPath = static function (string $path) use ($apiPrefix): string {
     return '/' . ($apiPrefix !== '' ? $apiPrefix . '/' : '') . ltrim($path, '/');
 };
 
-$router->get('/', function (Request $req) {
-    Response::redirect(Session::get('user') ? '/app/pos' : '/auth/login');
-});
+// Public marketing surface. On a shop subdomain the root keeps its original
+// behaviour (login / POS); on the apex domain it serves the landing page.
+$router->get('/', 'LandingController@index', [TenantResolverMiddleware::class]);
+$router->get('/robots.txt', 'LandingController@robots');
+$router->get('/sitemap.xml', 'LandingController@sitemap');
+$router->post('/leads', 'LandingController@submit', [CSRFMiddleware::class]);
 
 $router->get('/healthz', function (Request $req) {
     $db = 'ok';
@@ -228,6 +237,9 @@ $router->group([
     $r->get('/tenants', 'AdminController@index');
     $r->post('/tenants', 'AdminController@createTenant');
     $r->post('/tenants/status', 'AdminController@toggleStatus');
+
+    $r->get('/leads', 'AdminController@leads');
+    $r->post('/leads/status', 'AdminController@updateLeadStatus');
 });
 
 $router->group([

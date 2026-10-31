@@ -671,6 +671,7 @@ table.data-table tr:hover td {
 .badge-warning { background: #fffbeb; color: #b45309; }
 .badge-danger { background: #fef2f2; color: #b91c1c; }
 .badge-info { background: #eff6ff; color: #1d4ed8; }
+.badge-error { background: #fef2f2; color: #b91c1c; }
 
 /* Thermal Receipt Styling */
 @media print {

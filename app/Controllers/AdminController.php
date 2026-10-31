@@ -190,6 +190,71 @@ class AdminController {
         Response::redirect('/admin/tenants');
     }
 
+    public function leads(Request $request): void {
+        $status = (string)$request->query('status', 'new');
+        $allowed = ['new', 'contacted', 'onboarded', 'closed', 'all'];
+        if (!in_array($status, $allowed, true)) {
+            $status = 'new';
+        }
+
+        $where = '';
+        $params = [];
+        if ($status !== 'all') {
+            $where = ' WHERE status = :status';
+            $params['status'] = $status;
+        }
+
+        $leads = Database::fetchAll(
+            "SELECT * FROM leads{$where} ORDER BY created_at DESC LIMIT 500",
+            $params
+        );
+
+        $counts = ['new' => 0, 'contacted' => 0, 'onboarded' => 0, 'closed' => 0];
+        foreach (Database::fetchAll("SELECT status, COUNT(*) AS total FROM leads GROUP BY status") as $row) {
+            $counts[$row['status']] = (int)$row['total'];
+        }
+
+        View::render('admin/leads', [
+            'leads' => $leads,
+            'counts' => $counts,
+            'status' => $status,
+            'baseDomain' => TenantResolver::baseDomain(),
+        ]);
+    }
+
+    public function updateLeadStatus(Request $request): void {
+        $leadId = (int)$request->input('lead_id');
+        $status = (string)$request->input('status', '');
+        $back = '/admin/leads';
+
+        if (!in_array($status, ['new', 'contacted', 'onboarded', 'closed'], true)) {
+            flash('error', 'That lead status is not valid.');
+            Response::redirect($back);
+            return;
+        }
+
+        $lead = Database::fetchOne("SELECT id, name, status FROM leads WHERE id = :id", ['id' => $leadId]);
+        if (!$lead) {
+            flash('error', 'Lead not found.');
+            Response::redirect($back);
+            return;
+        }
+
+        Database::query("UPDATE leads SET status = :status WHERE id = :id", [
+            'status' => $status,
+            'id' => $leadId,
+        ]);
+
+        AuditService::log('lead.status_changed', 'lead', $leadId, [
+            'name' => $lead['name'],
+            'from' => $lead['status'],
+            'to' => $status,
+        ]);
+
+        flash('success', "Lead status updated to " . strtoupper($status) . '.');
+        Response::redirect($back . '?status=' . rawurlencode($status));
+    }
+
     protected function slugify(string $name): string {
         $slug = strtolower(trim((string)preg_replace('/[^A-Za-z0-9]+/', '-', $name), '-'));
         $slug = substr($slug, 0, 40);

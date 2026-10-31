@@ -48,9 +48,10 @@ $regMode = $taxProfile['registration_mode'] ?? ($tenant ? 'regular' : '');
 
         <?php if ($user): ?>
             <nav class="nav-links">
-                <?php if (($user['role'] ?? '') === 'super_admin'): ?>
-                    <a href="/admin/tenants" class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/admin') ? 'active' : '' ?>">Platform Admin</a>
-                    <a href="/app/pos" class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/app/pos') ? 'active' : '' ?>">POS Billing (Selected Store)</a>
+            <?php if (($user['role'] ?? '') === 'super_admin'): ?>
+                <a href="/admin/tenants" class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/admin/tenants') || $_SERVER['REQUEST_URI'] === '/admin' ? 'active' : '' ?>">Platform Admin</a>
+                <a href="/admin/leads" class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/admin/leads') ? 'active' : '' ?>">📣 Leads</a>
+                <a href="/app/pos" class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/app/pos') ? 'active' : '' ?>">POS Billing (Selected Store)</a>
                 <?php else: ?>
                     <?php if (can_access('/app/pos')): ?>
                         <a href="/app/pos" class="nav-link <?= str_starts_with($_SERVER['REQUEST_URI'] ?? '', '/app/pos') ? 'active' : '' ?>">POS</a>

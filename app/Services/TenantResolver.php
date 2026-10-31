@@ -27,7 +27,7 @@ class TenantResolver {
     }
 
     public static function adminHost(): string {
-        return strtolower(trim((string)Config::get('tenancy.admin_host', 'admin.arthadesk.in')));
+        return strtolower(trim((string)Config::get('tenancy.admin_host', 'app.arthadesk.in')));
     }
 
     public static function isLocalHost(?string $host = null): bool {
