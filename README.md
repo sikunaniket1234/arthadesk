@@ -116,7 +116,7 @@ The core loop:
 | Front end | Vanilla HTML/CSS/JS, no bundler |
 | PDF | `dompdf/dompdf` (optional — falls back to a printable page) |
 | Server | Apache/LiteSpeed (`.htaccess`), nginx, or PHP built-in server |
-| Container | Docker Compose (`php:8.2-apache` + `mariadb:10.11`) |
+| Container | Docker Compose (`php:8.2-apache` + `mariadb:10.11`) — local dev files, not published |
 
 Only one runtime dependency is declared in `composer.json`: `dompdf/dompdf`. The application works fully without `vendor/` installed — PDF export degrades to a browser print dialog.
 
@@ -134,7 +134,9 @@ Only one runtime dependency is declared in `composer.json`: `dompdf/dompdf`. The
 
 ## Quick start
 
-### Option A — Docker (recommended for development)
+### Option A — Docker
+
+> The Compose/Dockerfile are **not included in this repository** (kept as local development tooling). If you have them, run:
 
 ```bash
 docker compose up -d
@@ -142,7 +144,9 @@ docker compose up -d
 
 Then open <http://localhost:8000>.
 
-The Compose file wires the app to the `mariadb` service (`mariadb:10.11`) on `mariadb:3306` inside the Docker network, with database `arthadesk`, user `arthadesk`, password `arthapass` — matching `.env.dev`. MariaDB is also published to the host on port `3307`, and the app on port `8000`.
+The Compose setup wires the app to a `mariadb:10.11` service on `mariadb:3306`, database `arthadesk`, user `arthadesk`, password `arthapass` — matching `.env.dev`. MariaDB is published to the host on port `3307`, the app on port `8000`.
+
+**Prefer Option B below — it needs nothing but PHP and MySQL.**
 
 ### Option B — Manual
 
@@ -430,12 +434,14 @@ Documented so there are no surprises:
 
 ## Documentation
 
+Beyond this README, the following documents are maintained alongside the project but are **not published to this repository**:
+
 | Document | Contents |
 |---|---|
-| [`docs/DATABASE_SCHEMA.md`](docs/DATABASE_SCHEMA.md) | Column-level reference for all 26 tables, relationships, invariants |
-| [`docs/ONBOARDING_GUIDE.md`](docs/ONBOARDING_GUIDE.md) | Step-by-step guide for bringing a new shop live |
-| [`docs/SHOP_SETUP_GUIDE.md`](docs/SHOP_SETUP_GUIDE.md) | Shareable guide for shop owners: business setup and daily usage |
-| [`AUDIT_AND_DEPLOYMENT_PLAN.md`](AUDIT_AND_DEPLOYMENT_PLAN.md) | Security audit findings, Hostinger deployment plan, go-live checklist |
+| `docs/DATABASE_SCHEMA.md` | Column-level reference for all 26 tables, relationships, invariants |
+| `docs/ONBOARDING_GUIDE.md` | Step-by-step guide for bringing a new shop live |
+| `docs/SHOP_SETUP_GUIDE.md` | Shareable guide for shop owners: business setup and daily usage |
+| `AUDIT_AND_DEPLOYMENT_PLAN.md` | Security audit findings, Hostinger deployment plan, go-live checklist |
 
 ---
 

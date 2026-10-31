@@ -17,6 +17,15 @@ storage/uploads/*
 storage/receipts/*
 !storage/**/.gitkeep
 
+# Documentation — only README.md is published
+*.md
+!README.md
+docs/
+
+# Docker (local development only)
+docker/
+docker-compose.yml
+
 # Dependencies
 /vendor/
 
