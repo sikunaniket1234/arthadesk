@@ -303,7 +303,7 @@ class InvoiceController {
         $tenantId = (int)$tenant['id'];
 
         $invoice = Database::fetchOne("
-            SELECT i.*, c.name as customer_name, c.phone as customer_phone, c.gstin as customer_gstin,
+            SELECT i.*, COALESCE(c.name, i.walkin_name, 'Cash Customer') as customer_name, c.phone as customer_phone, c.gstin as customer_gstin,
                    c.address as customer_address, u.name as cashier_name
             FROM invoices i
             LEFT JOIN customers c ON i.customer_id = c.id
