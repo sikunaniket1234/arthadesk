@@ -506,6 +506,10 @@ $iconArrow = '<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor
 
         <div class="footer-bottom">
             <span>&copy; <?= $year ?> Artha-Desk. All rights reserved.</span>
+            <span class="footer-credit">
+                Created and Developed By
+                <a href="mailto:aniketnayak1112@gmail.com" rel="author">Aniket Nayak</a>
+            </span>
             <span>Your shop lives at <strong>yourshop.<?= e($baseDomain) ?></strong></span>
         </div>
     </div>

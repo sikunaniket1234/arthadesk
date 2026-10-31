@@ -248,6 +248,9 @@ a:hover { text-decoration: underline; }
 .footer-col a { color: #cbd5e1; font-size: .94rem; }
 .footer-col a:hover { color: #fff; }
 .footer-bottom { border-top: 1px solid #1e293b; margin-top: 34px; padding-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; font-size: .85rem; color: #94a3b8; }
+.footer-credit { color: #cbd5e1; }
+.footer-bottom a { color: #a5b4fc; font-weight: 600; }
+.footer-bottom a:hover { color: #fff; text-decoration: underline; }
 
 /* ---------- Responsive ---------- */
 @media (min-width: 640px) {
