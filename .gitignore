@@ -29,6 +29,12 @@ docker-compose.yml
 # Dependencies
 /vendor/
 
+# Hosting-server artifacts (only exist inside the deployed app root;
+# public_html is a copy of public/ at deploy time and must never be committed)
+/public_html/
+/DO_NOT_UPLOAD_HERE
+.env.tmp-*
+
 # Sensitive / operational files
 # NOTE: database/migrations and database/seeds are SOURCE CODE and stay tracked.
 # Only database dumps are ignored — those are written to storage/backups anyway.
