@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt #<?= e($invoice['invoice_number']) ?></title>
+    <?php if (empty($forPdf)): ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Oriya:wght@400;600;700&display=swap" rel="stylesheet">
+    <?php endif; ?>
     <style>
         * {
             box-sizing: border-box;
@@ -97,7 +99,8 @@
         }
         /* No page margins => the browser prints NO header/footer (removes the
            stray date + URL above the store name) and gives the receipt the
-           full paper height (stops the footer being trimmed off). */
+           full paper height (stops the footer being trimmed off).
+           A tiny 2mm body padding leaves a slight gap at the left/right edges. */
         @page {
             size: auto;
             margin: 0;
@@ -106,7 +109,7 @@
             .no-print { display: none !important; }
             html, body {
                 margin: 0;
-                padding: 0;
+                padding: 0 2mm;
                 width: 78mm;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -128,14 +131,19 @@
     </style>
 </head>
 <body>
+    <?php if (empty($forPdf)): ?>
     <div class="no-print" style="text-align: center; margin-bottom: 10px; padding: 10px; background: #f1f5f9; border-radius: 6px;">
         <button onclick="window.print()" style="padding: 6px 14px; background: #2563eb; color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer;">
             🖨️ Print to Thermal Printer
         </button>
+        <a href="/app/invoices/<?= e($invoice['id']) ?>/pdf?download=1" style="display: inline-block; padding: 6px 14px; background: #059669; color: #fff; border-radius: 4px; font-weight: 600; text-decoration: none; margin-left: 5px;">
+            ⬇️ Download PDF
+        </a>
         <button onclick="window.close()" style="padding: 6px 14px; background: #e2e8f0; color: #000; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; margin-left: 5px;">
             Close
         </button>
     </div>
+    <?php endif; ?>
 
     <div class="receipt-container">
         <!-- Store Header -->
@@ -267,6 +275,7 @@
         </div>
     </div>
 
+    <?php if (empty($forPdf)): ?>
     <script>
         // Auto-print once fonts are ready so the layout cannot shift mid-print.
         function autoPrint() {
@@ -280,5 +289,6 @@
             }
         });
     </script>
+    <?php endif; ?>
 </body>
 </html>

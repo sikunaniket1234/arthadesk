@@ -4,7 +4,7 @@ namespace App\Services;
 use App\Core\Logger;
 
 class PdfService {
-    public static function stream(string $html, string $filename, bool $attachment = false): void {
+    public static function stream(string $html, string $filename, bool $attachment = false, ?array $paper = null): void {
         $filename = self::safeFilename($filename);
 
         if (class_exists('Dompdf\\Dompdf')) {
@@ -15,7 +15,8 @@ class PdfService {
                     'defaultFont' => 'DejaVu Sans',
                 ]);
                 $dompdf->loadHtml($html, 'UTF-8');
-                $dompdf->setPaper('A4', 'portrait');
+                // $paper: [x, y, width, height] in points (e.g. thermal roll) or null for A4.
+                $dompdf->setPaper($paper ?? 'A4', 'portrait');
                 $dompdf->render();
                 $dompdf->stream($filename, ['Attachment' => $attachment]);
                 return;

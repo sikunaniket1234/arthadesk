@@ -101,17 +101,23 @@ class InvoiceController {
         $invoiceNumber = $data['invoice']['invoice_number'];
         $download = $request->query('download') === '1';
 
-        $body = View::renderToString('invoices/show', $data);
-        $html = PdfService::document('Invoice ' . $invoiceNumber, $body);
+        // The PDF is the thermal receipt itself (same 78mm layout the printer uses),
+        // rendered on thermal-width paper instead of the A4 invoice page.
+        $body = View::renderToString('invoices/thermal', $data + [
+            'noLayout' => true,
+            'forPdf' => true,
+        ]);
 
         AuditService::log('invoice.pdf_exported', 'invoice', $invoiceId, [
             'invoice_number' => $invoiceNumber,
             'download' => $download,
         ], (int)$tenant['id']);
 
-        // ?download=1 forces a file save (used by the POS after every sale);
-        // without it the PDF opens inline for previewing from the invoice page.
-        PdfService::stream($html, 'Invoice-' . $invoiceNumber . '.pdf', $download);
+        // ?download=1 forces a file save (optional from the receipt/invoice screens);
+        // without it the PDF opens inline for previewing.
+        // 78mm roll width in PDF points (78 * 72 / 25.4); tall page, Dompdf paginates if longer.
+        $paper = [0, 0, 78 * 72 / 25.4, 297 * 72 / 25.4];
+        PdfService::stream($body, 'Invoice-' . $invoiceNumber . '.pdf', $download, $paper);
     }
 
     public function export(Request $request): void {

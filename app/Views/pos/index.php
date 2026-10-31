@@ -472,21 +472,6 @@ function saveQuickCustomer(e) {
     .catch(err => alert('Network error saving customer.'));
 }
 
-function downloadInvoicePdf(invoiceId, invoiceNumber) {
-    // Saves the invoice PDF to the user's downloads on every completed sale.
-    try {
-        const a = document.createElement('a');
-        a.href = '/app/invoices/' + invoiceId + '/pdf?download=1';
-        a.download = invoiceNumber + '.pdf';
-        a.rel = 'noopener';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    } catch (e) {
-        // Download is best-effort; the invoice remains available under Invoices → PDF.
-    }
-}
-
 function executeCheckout() {
     if (cart.length === 0) return;
 
@@ -538,9 +523,8 @@ function executeCheckout() {
     .then(res => {
         if (res.success) {
             pendingIdempotencyKey = null;
-            // 1) save the PDF receipt to the user's downloads
-            downloadInvoicePdf(res.invoice_id, res.invoice_number);
-            // 2) open the thermal receipt for printing
+            // Open the thermal receipt for printing (auto-print fires on load).
+            // PDF download is optional — offered on the receipt screen itself.
             if (printWindow && !printWindow.closed) {
                 printWindow.location.href = '/app/invoices/' + res.invoice_id + '/thermal';
             } else {
@@ -548,8 +532,7 @@ function executeCheckout() {
             }
             clearCart();
             alert('Sale Completed! Invoice #' + res.invoice_number + ' generated.' + (res.replayed ? ' (Recovered previous result)' : ''));
-            // Reload after the download has been handed off to the browser.
-            setTimeout(function () { window.location.reload(); }, 800);
+            window.location.reload();
         } else {
             if (printWindow && !printWindow.closed) {
                 printWindow.close();
