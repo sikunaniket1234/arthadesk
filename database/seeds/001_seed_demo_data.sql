@@ -24,7 +24,7 @@ INSERT INTO tax_categories (name, category_code, rate_percent, cgst_percent, sgs
 -- $2y$10$eO0V6j5o30c2o/y6u0H/a.Q62P8R8Xy9Gj4fXlQ4bUaL5j8D7n7qO
 -- Super Admin
 INSERT INTO users (tenant_id, name, email, password_hash, role, is_active) VALUES
-(NULL, 'Platform Super Admin', 'admin@arthadesk.local', '$2y$10$wE8w0hGj30QeYq7fDkSae.mD3XfXzB0tW3L7YkI5P7P1G2O3R4U5a', 'super_admin', 1);
+(NULL, 'Platform Super Admin', 'admin@arthadesk.local', '$2y$10$H7.ZFmLHzrD2Ta2zqU8WEeO.8oGxaYDpOp2Vvtp5w3t/jxxHzYreC', 'super_admin', 1);
 
 -- Tenant 1: Regular GST Retailer
 INSERT INTO tenants (id, slug, name, owner_name, phone, email, address, status, currency, default_locale) VALUES
@@ -34,8 +34,8 @@ INSERT INTO tenant_tax_profiles (tenant_id, registration_mode, gstin, legal_busi
 (1, 'regular', '21AAACT1234F1Z5', 'Maa Tarini Enterprise Pvt Ltd', 'Maa Tarini General Store', '21', 'Odisha');
 
 INSERT INTO users (tenant_id, name, email, password_hash, role, is_active) VALUES
-(1, 'Bikram Sahoo (Owner)', 'owner@tarini.local', '$2y$10$wE8w0hGj30QeYq7fDkSae.mD3XfXzB0tW3L7YkI5P7P1G2O3R4U5a', 'tenant_admin', 1),
-(1, 'Gopal Das (Cashier)', 'cashier@tarini.local', '$2y$10$wE8w0hGj30QeYq7fDkSae.mD3XfXzB0tW3L7YkI5P7P1G2O3R4U5a', 'cashier', 1);
+(1, 'Bikram Sahoo (Owner)', 'owner@tarini.local', '$2y$10$H7.ZFmLHzrD2Ta2zqU8WEeO.8oGxaYDpOp2Vvtp5w3t/jxxHzYreC', 'tenant_admin', 1),
+(1, 'Gopal Das (Cashier)', 'cashier@tarini.local', '$2y$10$H7.ZFmLHzrD2Ta2zqU8WEeO.8oGxaYDpOp2Vvtp5w3t/jxxHzYreC', 'cashier', 1);
 
 -- Tenant 2: Composition Taxpayer
 INSERT INTO tenants (id, slug, name, owner_name, phone, email, address, status, currency, default_locale) VALUES
@@ -45,7 +45,7 @@ INSERT INTO tenant_tax_profiles (tenant_id, registration_mode, gstin, legal_busi
 (2, 'composition', '21BBBCS5678G2Z1', 'Utkal Sweets & Bakery', 'Utkal Sweet Stall', '21', 'Odisha');
 
 INSERT INTO users (tenant_id, name, email, password_hash, role, is_active) VALUES
-(2, 'Prasanna Mohanty', 'owner@utkal.local', '$2y$10$wE8w0hGj30QeYq7fDkSae.mD3XfXzB0tW3L7YkI5P7P1G2O3R4U5a', 'tenant_admin', 1);
+(2, 'Prasanna Mohanty', 'owner@utkal.local', '$2y$10$H7.ZFmLHzrD2Ta2zqU8WEeO.8oGxaYDpOp2Vvtp5w3t/jxxHzYreC', 'tenant_admin', 1);
 
 -- Tenant 3: Unregistered Small Shop
 INSERT INTO tenants (id, slug, name, owner_name, phone, email, address, status, currency, default_locale) VALUES
@@ -55,7 +55,7 @@ INSERT INTO tenant_tax_profiles (tenant_id, registration_mode, gstin, legal_busi
 (3, 'unregistered', NULL, 'Khurda Daily Corner', 'Khurda Daily Corner', '21', 'Odisha');
 
 INSERT INTO users (tenant_id, name, email, password_hash, role, is_active) VALUES
-(3, 'Ramesh Jena', 'owner@khurda.local', '$2y$10$wE8w0hGj30QeYq7fDkSae.mD3XfXzB0tW3L7YkI5P7P1G2O3R4U5a', 'tenant_admin', 1);
+(3, 'Ramesh Jena', 'owner@khurda.local', '$2y$10$H7.ZFmLHzrD2Ta2zqU8WEeO.8oGxaYDpOp2Vvtp5w3t/jxxHzYreC', 'tenant_admin', 1);
 
 -- Chart of Accounts for Tenant 1
 INSERT INTO accounts (tenant_id, code, name, type) VALUES
