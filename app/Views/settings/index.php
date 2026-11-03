@@ -21,10 +21,10 @@ $indiaStates = [
 
     <!-- Tab Nav -->
     <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;border-bottom:2px solid #e2e8f0;padding-bottom:0;flex-wrap:wrap;">
-        <button class="settings-tab active" onclick="switchTab('business')" id="tab-business">dY?� Business Profile</button>
-        <button class="settings-tab" onclick="switchTab('gst')" id="tab-gst">dY"< GST & Tax</button>
-        <button class="settings-tab" onclick="switchTab('ops')" id="tab-ops">�sT�,? Operations</button>
-        <button class="settings-tab" onclick="switchTab('users')" id="tab-users">dY` Users & Access</button>
+        <button class="settings-tab active" onclick="switchTab('business')" id="tab-business">🏪 Business Profile</button>
+        <button class="settings-tab" onclick="switchTab('gst')" id="tab-gst">📋 GST & Tax</button>
+        <button class="settings-tab" onclick="switchTab('ops')" id="tab-ops">⚙️ Operations</button>
+        <button class="settings-tab" onclick="switchTab('users')" id="tab-users">👤 Users & Access</button>
         <button class="settings-tab" onclick="switchTab('templates')" id="tab-templates">🧾 Bill/Receipt Designer</button>
     </div>
 
@@ -217,7 +217,7 @@ $indiaStates = [
         <!-- Save Button (shown on business/gst/ops tabs) -->
         <div id="saveRow" style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.2rem;">
             <a href="/app/pos" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">dY'_ Save Settings</button>
+            <button type="submit" class="btn btn-primary">💾 Save Settings</button>
         </div>
     </form>
 </div>
