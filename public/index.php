@@ -285,7 +285,13 @@ $router->group([
 
     $r->get('/products', 'ProductController@index');
     $r->post('/products', 'ProductController@store');
+    $r->post('/products/bulk', 'ProductController@bulk');
+    $r->get('/products/export', 'ProductController@export');
+    $r->get('/products/import', 'ProductController@importForm');
+    $r->post('/products/import', 'ProductController@importStore');
+    $r->get('/products/{id}', 'ProductController@show');
     $r->post('/products/{id}/update', 'ProductController@update');
+    $r->post('/products/{id}/quick-edit', 'ProductController@quickEdit');
     $r->post('/products/{id}/toggle', 'ProductController@toggle');
 
     $r->get('/customers', 'CustomerController@index');
@@ -297,6 +303,7 @@ $router->group([
     $r->post('/suppliers/{id}/update', 'SupplierController@update');
 
     $r->get('/inventory', 'InventoryController@index');
+    $r->get('/inventory/export', 'InventoryController@export');
     $r->post('/inventory/adjust', 'InventoryController@adjust');
 
     $r->get('/purchases', 'PurchaseController@index');

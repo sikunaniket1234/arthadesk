@@ -658,6 +658,18 @@ table.data-table tr:hover td {
   background: #f8fafc;
 }
 
+/* Inline-editable cells */
+table.data-table td.cell-edit:hover {
+  background: #e0f2fe;
+  outline: 1px dashed #0ea5e9;
+  outline-offset: -1px;
+}
+
+table.data-table th a:hover {
+  color: #0f172a;
+  text-decoration: none;
+}
+
 /* Badges */
 .badge {
   display: inline-block;

@@ -28,6 +28,8 @@ $defaultPay = in_array(($defaultPaymentMode ?? 'cash'), ['cash', 'upi', 'card', 
                      data-id="<?= e($p['id']) ?>" 
                      data-name-en="<?= e($p['name_en']) ?>"
                      data-name-or="<?= e($p['name_or']) ?>"
+                     data-barcode="<?= e($p['barcode'] ?? '') ?>"
+                     data-sku="<?= e($p['sku'] ?? '') ?>"
                      data-price="<?= e($p['sale_price']) ?>"
                      data-tax-rate="<?= e($p['tax_rate_percent'] ?? 0) ?>"
                      data-tax-class="<?= e($p['tax_classification'] ?? 'taxable') ?>"
@@ -259,15 +261,40 @@ function filterCategory(cat) {
     });
 }
 
-// Live Search
+// Live Search (name, Odia name, barcode, SKU)
 document.getElementById('posSearchInput').addEventListener('input', function(e) {
     const term = e.target.value.toLowerCase().trim();
     document.querySelectorAll('.product-card').forEach(card => {
         const en = (card.dataset.nameEn || '').toLowerCase();
         const or = (card.dataset.nameOr || '').toLowerCase();
-        const match = en.includes(term) || or.includes(term);
+        const barcode = (card.dataset.barcode || '').toLowerCase();
+        const sku = (card.dataset.sku || '').toLowerCase();
+        const match = term === '' || en.includes(term) || or.includes(term) || barcode.includes(term) || sku.includes(term);
         card.style.display = match ? 'flex' : 'none';
     });
+});
+
+// Scanner / keyboard-wedge: Enter with an exact barcode or SKU match adds the product
+document.getElementById('posSearchInput').addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const term = e.target.value.trim();
+    if (term === '') return;
+    const lower = term.toLowerCase();
+    let exact = null;
+    document.querySelectorAll('.product-card').forEach(card => {
+        if (exact) return;
+        const barcode = (card.dataset.barcode || '').toLowerCase();
+        const sku = (card.dataset.sku || '').toLowerCase();
+        if ((barcode !== '' && barcode === lower) || (sku !== '' && sku === lower)) {
+            exact = card;
+        }
+    });
+    if (exact) {
+        exact.click();
+        e.target.value = '';
+        e.target.dispatchEvent(new Event('input'));
+    }
 });
 
 function addToCart(p) {

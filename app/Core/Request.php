@@ -61,6 +61,10 @@ class Request {
         return $this->post[$key] ?? $this->get[$key] ?? $default;
     }
 
+    public function files(string $key, $default = null) {
+        return $_FILES[$key] ?? $default;
+    }
+
     public function all(): array {
         if ($this->json !== null) {
             return array_merge($this->get, $this->json);
