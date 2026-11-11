@@ -252,6 +252,9 @@ $router->group([
 
     $r->get('/leads', 'AdminController@leads');
     $r->post('/leads/status', 'AdminController@updateLeadStatus');
+
+    $r->get('/health', 'AdminController@health');
+    $r->get('/health.json', 'AdminController@healthJson');
 });
 
 $router->group([
